@@ -1,0 +1,120 @@
+---
+title: "7 Websites Every Programmer Should Bookmark"
+description: "From regex debugging and bundle size analysis to visual JSON graphs and terminal explanations — tools that actually save hours of engineering time."
+date: "2026-10-18"
+updatedAt: "2026-10-19"
+slug: "7-websites-every-programmer-should-know"
+category: "Developer Tools"
+tags:
+  - Developer Tools
+  - Productivity
+  - Resources
+  - Web Development
+coverImage: "/images/articles/programmer-websites.svg"
+coverAlt: "Modern developer desk setup with dual glowing monitors displaying developer utilities"
+featured: false
+draft: false
+---
+
+Every software engineer develops a personal toolkit over time. Beyond your IDE and favorite terminal theme, there is a tier of specialized web-based tools that transform painful, hour-long debugging sessions into thirty-second tasks.
+
+Here are 7 high-leverage developer websites that deserve a permanent spot in your browser bookmarks.
+
+---
+
+## 1. Regex101 (regex101.com)
+
+Regular expressions have a reputation for looking like someone mashed their hands against a mechanical keyboard:
+
+```regex
+^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,})(?:\/.*)?$
+```
+
+Trying to debug that in your head or by trial-and-error in console logs will lead directly to madness.
+
+**Regex101** breaks down regular expressions character by character. It provides:
+- A real-time **Regex Explanation tree** explaining exactly what every token, group, lookahead, and quantifier does.
+- A **Match Information pane** displaying capture groups, offsets, and execution steps.
+- Code generation in Python, JavaScript, Go, PHP, and Rust.
+- A **Regex Debugger** showing the exact backtracking paths the engine takes.
+
+---
+
+## 2. Bundlephobia (bundlephobia.com)
+
+Before running `npm install some-cool-library`, you should know what you are doing to your client bundle size.
+
+A single innocent-looking utility package might sneak in dozens of transitive dependencies and add 150KB of gzipped JavaScript to your users' mobile download budget.
+
+**Bundlephobia** allows you to inspect any NPM package instantly:
+- Minified and Gzipped download size.
+- Estimated download time on slow 3G and 4G networks.
+- Full dependency breakdown.
+- Tree-shaking support indicators.
+- Side-by-side alternative package suggestions.
+
+---
+
+## 3. DevDocs (devdocs.io)
+
+Modern development requires jumping between JavaScript, React, PostgreSQL, Docker, CSS, and Bash docs all day.
+
+**DevDocs** unites hundreds of API documentations into a single, lightning-fast, keyboard-driven interface.
+
+Key features:
+- **Offline Mode:** Download entire documentation sets into browser IndexedDB with one click.
+- **Unified Instant Search:** Press `/` and instantly find methods across any framework.
+- Zero ads, zero tracking, and pure clean typography.
+
+---
+
+## 4. Can I Use (caniuse.com)
+
+Nothing hurts quite like implementing a slick CSS feature or modern browser API, only to discover it breaks for 18% of your users on Safari or older Chromium engines.
+
+**Can I Use** provides the global ground truth for browser compatibility:
+- Real-time compatibility tables for HTML5, CSS, Web APIs, and JavaScript features.
+- Global and regional audience share percentages.
+- Known browser bugs and vendor prefix requirements.
+
+---
+
+## 5. JSON Crack (jsoncrack.com)
+
+When you're dealing with massive, 2,000-line nested JSON payloads returned by third-party APIs or microservices, raw text format makes it nearly impossible to grasp the relationships between nested entities.
+
+**JSON Crack** parses raw JSON, YAML, or TOML and converts it into an interactive, visual 2D node graph:
+- Zoom and pan across nested arrays and objects.
+- Click any node to copy its path or inspect its properties.
+- Export as clean SVG or PNG diagrams for technical documentation and pull requests.
+
+---
+
+## 6. ExplainShell (explainshell.com)
+
+Have you ever copied a complex shell pipeline from StackOverflow or documentation that looked like this?
+
+```bash
+find . -type f -name "*.log" -mtime +30 -exec rm -rf {} +
+```
+
+Running unfamiliar shell commands with elevated permissions is dangerous.
+
+**ExplainShell** parses shell commands against the actual Linux `man` pages and highlights what every single flag and parameter does. It draws visual connectors directly from each argument to its official manual description.
+
+---
+
+## 7. Ray.so & Carbon (ray.so)
+
+Sharing code snippets in Slack, pull request summaries, documentation, or technical blogs shouldn't look like an unformatted screenshot of notepad.
+
+**Ray.so** generates beautiful, syntactically highlighted code images with:
+- Configurable gradient backgrounds.
+- Language syntax themes (Breeze, Midnight, Morandi, etc.).
+- Line numbering, padding controls, and retina resolution exports.
+
+---
+
+## Which Tools Are in Your Rotation?
+
+Having the right tool for the job doesn't make you a lazy engineer—it makes you an efficient one. Bookmark these utilities, save your brainpower for core architecture, and let specialized tools handle the tedious syntax.
