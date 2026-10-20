@@ -1,0 +1,374 @@
+---
+title: "Build a RAG Chatbot Over Your Own Documents"
+description: "A beginner-friendly, step-by-step guide using Python. Build a local document chatbot in under 70 lines of code with ChromaDB and Claude."
+date: "2026-10-20"
+slug: "build-rag-chatbot-over-your-documents"
+category: "Generative AI"
+tags:
+  - RAG
+  - Python
+  - Generative AI
+  - ChromaDB
+  - Anthropic
+  - AI Tutorials
+coverImage: "/images/articles/rag-chatbot.svg"
+coverAlt: "Futuristic vector diagram showing document retrieval and chatbot question answering with ChromaDB and Claude"
+featured: false
+draft: false
+---
+
+> **A beginner-friendly, step-by-step guide using Python. No machine learning background needed.**  
+> *Reading time: ~8 minutes | Build time: ~30 minutes | Level: Beginner*
+
+---
+
+## Why This Matters
+
+AI chatbots like ChatGPT and Claude are remarkably articulate when answering broad, public questions. However, they know **nothing about your private files**: your personal notes, company handbook, product specifications, legal contracts, or university study materials.
+
+When you ask a standard model about these internal materials, one of two things happens:
+1. It politely tells you it does not possess that knowledge.
+2. It hallucinates—confidently inventing plausible-sounding policies, dates, and numbers that are completely untrue.
+
+The solution to this problem is an industry-standard pattern called **RAG**, short for **Retrieval-Augmented Generation**.
+
+In this practical tutorial, you will build a lightweight Python chatbot from scratch that:
+- Answers user questions strictly using your own local documents.
+- Guarantees zero hallucinations by admitting when an answer isn't present in your files.
+- Cites the exact file name each answer came from.
+
+---
+
+## What Is RAG, in Simple Words?
+
+Think of taking an **open-book exam**.
+
+Instead of forcing a student to memorize thousands of pages of textbooks before sitting down in the exam room, you give them the textbooks. When a question appears on the exam, the student:
+1. Flips to the index or table of contents to find the exact two pages discussing the topic.
+2. Reads those two relevant pages carefully.
+3. Formulates a grounded, factual answer based strictly on what is written on those pages.
+
+RAG does the exact same thing in software through three distinct steps:
+
+1. **Retrieve**: Scan your local documents and pull the specific paragraphs most semantically relevant to the user's question.
+2. **Augment**: Take those retrieved paragraphs and insert them directly into the prompt context sent to the language model.
+3. **Generate**: The AI reads the provided context and writes a natural, grounded answer based only on those facts.
+
+<Image
+  src="/images/articles/rag-flow-diagram.svg"
+  alt="RAG flow: load once into ChromaDB, answer each time with Claude"
+  caption="Figure 1: RAG Flow — Phase 1 loads and indexes your documents once. Phase 2 retrieves and generates an answer for every user question."
+  width={1200}
+  height={580}
+/>
+
+Notice how the pipeline is split into two distinct operational phases:
+- **Phase 1 (The Top Row)** happens **once**, when you ingest and index your document collection.
+- **Phase 2 (The Bottom Row)** happens **every time** someone asks a question in the terminal.
+
+---
+
+## What You Will Need
+
+Before getting started, ensure you have the following prerequisites ready:
+
+- **Python 3.9 or newer** installed on your computer.
+- An **Anthropic API key** (available in the [Anthropic Console](https://console.anthropic.com/)).
+- A couple of small `.txt` or `.md` files to test against (e.g. your company policies, notes, or FAQs).
+
+We will rely on just two lightweight external Python libraries:
+1. **`chromadb`**: A fast, embedded vector database that runs entirely on your local machine. It manages document storage and automatically converts text into semantic vector embeddings using a built-in model, requiring zero complex configuration.
+2. **`anthropic`**: The official Python client library to dispatch prompts to Claude and receive synthesized answers.
+
+---
+
+## Step 1: Set Up Your Project
+
+Open your terminal or command prompt, create a dedicated project directory, and initialize a Python virtual environment:
+
+```bash
+mkdir rag-chatbot
+cd rag-chatbot
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+# On macOS / Linux:
+source venv/bin/activate
+
+# On Windows (Command Prompt):
+venv\Scripts\activate
+
+# On Windows (PowerShell):
+venv\Scripts\Activate.ps1
+```
+
+Install the required dependencies:
+
+```bash
+pip install chromadb anthropic
+```
+
+Next, configure your `ANTHROPIC_API_KEY` environment variable so the Anthropic SDK can authenticate your requests without hardcoding credentials in your source files:
+
+```bash
+# On macOS / Linux:
+export ANTHROPIC_API_KEY="your-key-here"
+
+# On Windows (Command Prompt):
+set ANTHROPIC_API_KEY=your-key-here
+
+# On Windows (PowerShell):
+$env:ANTHROPIC_API_KEY="your-key-here"
+```
+
+<Callout type="tip" title="Windows PowerShell Tip">
+If you are developing in VS Code or Windows Terminal using PowerShell, use `$env:ANTHROPIC_API_KEY="sk-ant-..."` to set your environment variable for your active session.
+</Callout>
+
+Now, create a folder named `docs` inside your project and add two or three sample text or markdown files to test with. Your final project structure will look like this:
+
+```text
+rag-chatbot/
+├── docs/
+│   ├── handbook.md
+│   └── faq.txt
+├── ingest.py
+└── chat.py
+```
+
+---
+
+## Step 2: Load Your Documents (`ingest.py`)
+
+Create a file named `ingest.py`. This script reads your raw documents, breaks them down into digestible chunks with a sliding overlap, and stores them in your persistent local ChromaDB instance.
+
+### Why Do We Need Chunks?
+
+A 20-page document is far too large and diffuse to search effectively. Small, focused pieces (around 800 characters) allow vector similarity search to pinpoint the exact paragraph or sentence that answers the user's specific inquiry. 
+
+We also introduce a small **overlap** (150 characters) between consecutive chunks. This prevents vital information from being cut in half at an arbitrary character boundary.
+
+```python
+import os
+import glob
+import chromadb
+
+# 1. Create (or open) a persistent local database in the "db" directory
+client = chromadb.PersistentClient(path="db")
+collection = client.get_or_create_collection("my_docs")
+
+
+def chunk_text(text: str, size: int = 800, overlap: int = 150):
+    """Split text into overlapping pieces to preserve context."""
+    chunks = []
+    start = 0
+    while start < len(text):
+        chunks.append(text[start:start + size])
+        start += size - overlap
+    return chunks
+
+
+# 2. Gather all .txt and .md files inside the docs/ directory
+files = glob.glob("docs/*.txt") + glob.glob("docs/*.md")
+
+for path in files:
+    filename = os.path.basename(path)
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+
+    # 3. Chunk each file and store in ChromaDB with metadata
+    for i, chunk in enumerate(chunk_text(text)):
+        collection.upsert(
+            ids=[f"{filename}-{i}"],
+            documents=[chunk],
+            metadatas=[{"source": filename}],
+        )
+    print(f"Loaded {filename}")
+
+print("Done. Your documents are ready to search.")
+```
+
+### Running the Ingestion Script
+
+Run the script in your terminal:
+
+```bash
+python ingest.py
+```
+
+<Callout type="info" title="First Run Behavior">
+The very first time you execute `ingest.py`, ChromaDB will automatically download a compact embedding model (`all-MiniLM-L6-v2`, ~80MB) to your machine. Subsequent runs will use the cached local weights and execute instantaneously.
+</Callout>
+
+### What Just Happened Under the Hood?
+
+ChromaDB converted every 800-character chunk into a high-dimensional list of floating-point numbers (an **embedding**) representing its conceptual meaning. In this vector space, pieces of text discussing identical themes (like "vacation policies" and "paid time off") cluster together mathematically, making true semantic search possible.
+
+---
+
+## Step 3: Build the Chatbot (`chat.py`)
+
+Now create a second file named `chat.py`. This script manages the user conversation loop: it takes a question, queries ChromaDB for the closest document chunks, builds a fortified prompt, and instructs Claude to generate an answer.
+
+```python
+import chromadb
+from anthropic import Anthropic
+
+# Connect to the persistent database created by ingest.py
+collection = chromadb.PersistentClient(path="db").get_collection("my_docs")
+
+# Initialize the Anthropic client (reads ANTHROPIC_API_KEY from environment)
+llm = Anthropic()
+
+
+def ask(question: str):
+    # 1. Retrieve the 4 most relevant chunks from ChromaDB
+    results = collection.query(query_texts=[question], n_results=4)
+    chunks = results["documents"][0]
+    sources = {meta["source"] for meta in results["metadatas"][0]}
+
+    # 2. Build a fortified prompt injecting the retrieved context
+    context = "\n\n---\n\n".join(chunks)
+    prompt = f"""Answer the question using only the context below.
+If the answer is not in the context, say you don't know.
+
+Context:
+{context}
+
+Question: {question}"""
+
+    # 3. Dispatch to Claude to generate a grounded response
+    response = llm.messages.create(
+        model="claude-3-5-sonnet-20241022",
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.content[0].text, sources
+
+
+# Interactive terminal loop
+print("Ask questions about your documents. Type 'quit' to exit.")
+while True:
+    question = input("\nYou: ")
+    if question.lower() in ("quit", "exit"):
+        break
+    answer, sources = ask(question)
+    print(f"\nBot: {answer}")
+    print(f"Sources: {', '.join(sources)}")
+```
+
+<Callout type="tip" title="Model Identifier">
+In the script above, we use `claude-3-5-sonnet-20241022` (or alias `claude-3-5-sonnet-latest`), which offers state-of-the-art reasoning, exceptional instruction-following, and minimal latency for retrieval tasks.
+</Callout>
+
+---
+
+## Step 4: Try It Out
+
+Launch your chatbot:
+
+```bash
+python chat.py
+```
+
+Test it with a question that exists within your `docs/` files, followed by a general knowledge question that is **not** mentioned in your files:
+
+```text
+You: How many vacation days do new employees get?
+Bot: New employees get 15 vacation days per year, according to the handbook.
+Sources: handbook.md
+
+You: What is the capital of Australia?
+Bot: I don't know. That information is not in the provided documents.
+Sources: faq.txt, handbook.md
+```
+
+### Why the Second Answer Matters Most
+
+The second answer is the foundational achievement of RAG. 
+
+Because of the strict negative boundary established in our system prompt (*"If the answer is not in the context, say you don't know"*), Claude gracefully declines to answer rather than relying on its internal pre-training to guess or synthesize unvetted facts. This is the cornerstone of trustworthy, auditable AI in enterprise software.
+
+<Callout type="warning" title="Understanding Source Attribution">
+Notice that the terminal prints `Sources: faq.txt, handbook.md` even when the bot answers "I don't know". This occurs because ChromaDB's search always returns the 4 mathematically closest chunks, regardless of whether their relevance score surpasses an acceptable threshold. In a production system, you can filter out results whose cosine similarity distance falls below a minimum cutoff score.
+</Callout>
+
+---
+
+## System Architecture
+
+Here is how your finished local project interacts with the cloud:
+
+<Image
+  src="/images/articles/rag-architecture.svg"
+  alt="System architecture diagram: local project and one cloud call"
+  caption="Figure 2: Architecture — Both scripts communicate with your local ChromaDB directory. Only the formatted prompt is sent to Anthropic over HTTPS."
+  width={1200}
+  height={560}
+/>
+
+### Key Architectural Strengths:
+1. **Privacy & Security**: Your private documents never get uploaded in bulk to any third-party vector host. They remain safely stored on your local disk.
+2. **Minimal Cloud Footprint**: Only the retrieved 3,000 characters and the single user question are sent across the network.
+3. **Low Latency & Cost**: Because ChromaDB operates in-memory with disk persistence, vector search executes in single-digit milliseconds.
+
+---
+
+## Quick Recap
+
+| Step | What You Built | Why It Matters |
+| :--- | :--- | :--- |
+| **Chunk** | Split text files into 800-character segments | Prevents context dilution and enables pinpoint retrieval |
+| **Embed & Store** | Persisted vectors in local ChromaDB | Translates semantic meaning into fast mathematical nearest-neighbor search |
+| **Retrieve** | Fetched top 4 closest chunks via cosine distance | Passes only relevant facts to the AI context window |
+| **Generate** | Prompted Claude with strict boundary guardrails | Produces accurate, hallucination-free answers with source attribution |
+
+---
+
+## Common Problems & Troubleshooting
+
+### 1. The bot gives vague or slightly inaccurate answers
+- **Cause**: The retrieved chunks are missing critical adjacent context, or the chunk size is too small.
+- **Fix**: Increase `n_results` from 4 to 6 in `chat.py`, or increase the chunk size to 1,000 characters.
+
+### 2. The bot says "I don't know" even when the fact is in your files
+- **Cause**: The relevant sentence was severed right at a chunk boundary, causing neither chunk to contain sufficient semantic signal.
+- **Fix**: Increase the `overlap` parameter in `chunk_text()` from 150 to 250 characters, or chunk your files by markdown headings (`##`) rather than raw character counts.
+
+### 3. You updated or removed documents in `docs/`
+- **Cause**: While `upsert()` updates modified chunks, deleting or shortening a document can leave orphaned chunks from previous runs in the database.
+- **Fix**: To perform a clean rebuild, simply delete the local `db/` folder (`rm -rf db` or `Remove-Item -Recurse db` on Windows) and rerun `python ingest.py`.
+
+### 4. You want to query PDF files instead of text
+- **Fix**: Install `pypdf` (`pip install pypdf`), extract the text strings from each page, and pass the text through the same `chunk_text()` pipeline into ChromaDB:
+
+```python
+from pypdf import PdfReader
+
+reader = PdfReader("docs/manual.pdf")
+text = "\n".join(page.extract_text() for page in reader.pages)
+```
+
+---
+
+## Where to Go From Here
+
+Now that your fundamental RAG pipeline is working, here are the logical next steps to level it up:
+
+1. **Add a Graphical Interface**: Wrap `chat.py` with [Streamlit](https://streamlit.io/) or [Gradio](https://www.gradio.app/) to give your team a sleek web UI with file drag-and-drop.
+2. **Multi-Turn Conversation Memory**: Append previous user questions and assistant answers to Claude's `messages` array so users can ask contextual follow-up questions.
+3. **Semantic Chunking**: Instead of arbitrary character counts, split documents using AST markdown parsers that respect headers, code blocks, and list items.
+4. **Automated Quality Benchmarking**: Curate an evaluation dataset of 15 questions with verified ground-truth answers, and measure your retrieval recall rate automatically.
+
+---
+
+## Final Thoughts
+
+RAG is arguably the most practical and impactful application of modern generative AI. You do not need expensive GPU clusters, massive training runs, or a PhD in machine learning to build something genuinely useful.
+
+The complete system you just built runs in **under 70 lines of Python**, yet it embodies the exact same architectural principles powering commercial knowledge assistants, customer support agents, and internal documentation search engines at scale.
+
+Try pointing `ingest.py` at your personal research notes, markdown archives, or project specifications this week—you might be surprised by how insightful your custom assistant can be.

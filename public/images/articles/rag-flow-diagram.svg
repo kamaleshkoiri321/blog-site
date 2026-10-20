@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580" width="1200" height="580">
+  <defs>
+    <linearGradient id="flowBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080A0A" />
+      <stop offset="100%" stop-color="#111614" />
+    </linearGradient>
+    <pattern id="flowGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A211E" stroke-width="0.75" />
+    </pattern>
+    <marker id="arrowNeon" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#B7FF3C" />
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#5A6760" />
+    </marker>
+  </defs>
+
+  <rect width="1200" height="580" fill="url(#flowBg)" />
+  <rect width="1200" height="580" fill="url(#flowGrid)" />
+
+  <!-- Diagram Title -->
+  <g transform="translate(60, 45)">
+    <text x="0" y="0" fill="#F4F5F2" font-family="'Inter', system-ui, sans-serif" font-size="22" font-weight="700">RAG Dual-Phase Flow</text>
+    <text x="0" y="24" fill="#8E9992" font-family="'JetBrains Mono', monospace" font-size="13">Ingest once into local database · Retrieve &amp; generate on every user query</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- TOP ROW: INGESTION (LOAD ONCE)             -->
+  <!-- ========================================== -->
+  <g transform="translate(60, 100)">
+    <!-- Phase background container -->
+    <rect x="0" y="0" width="1080" height="190" rx="14" fill="#0D1210" stroke="#1E2824" stroke-width="1.2" />
+    
+    <!-- Phase Badge -->
+    <rect x="20" y="16" width="220" height="26" rx="6" fill="#18241C" stroke="#2D4634" stroke-width="1" />
+    <circle cx="32" cy="29" r="4" fill="#B7FF3C" />
+    <text x="44" y="33" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" letter-spacing="0.5">PHASE 1: LOAD ONCE (ingest.py)</text>
+
+    <!-- Node 1: Raw Documents -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="210" height="105" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11">STEP 1</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="16" font-weight="600">Your Documents</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="12">docs/ (*.txt, *.md)</text>
+      <text x="16" y="92" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="10">Handbook, FAQs, notes</text>
+    </g>
+
+    <!-- Arrow 1 -> 2 -->
+    <line x1="240" y1="112" x2="280" y2="112" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 2: Chunking -->
+    <g transform="translate(290, 60)">
+      <rect x="0" y="0" width="220" height="105" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11">STEP 2</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="16" font-weight="600">Text Chunking</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="12">800 chars / chunk</text>
+      <text x="16" y="92" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="10">+150 char sliding overlap</text>
+    </g>
+
+    <!-- Arrow 2 -> 3 -->
+    <line x1="520" y1="112" x2="560" y2="112" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 3: ChromaDB Embeddings -->
+    <g transform="translate(570, 60)">
+      <rect x="0" y="0" width="220" height="105" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11">STEP 3</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="16" font-weight="600">Embeddings</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="12">Text → Numbers</text>
+      <text x="16" y="92" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="10">Built-in all-MiniLM model</text>
+    </g>
+
+    <!-- Arrow 3 -> 4 -->
+    <line x1="800" y1="112" x2="840" y2="112" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 4: Local Storage -->
+    <g transform="translate(850, 60)">
+      <rect x="0" y="0" width="210" height="105" rx="10" fill="#18231C" stroke="#B7FF3C" stroke-width="1.5" />
+      <text x="16" y="28" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11">STEP 4</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="16" font-weight="600">Local ChromaDB</text>
+      <text x="16" y="74" fill="#E1E6E2" font-family="'Inter', sans-serif" font-size="12">Persistent in db/</text>
+      <text x="16" y="92" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="10">Stored &amp; indexed on disk</text>
+    </g>
+  </g>
+
+  <!-- Connection from DB down to Phase 2 Search -->
+  <path d="M 1015 295 L 1015 325 L 395 325 L 395 375" fill="none" stroke="#2E4A35" stroke-width="2" stroke-dasharray="4 4" />
+
+  <!-- ========================================== -->
+  <!-- BOTTOM ROW: QUERY (ANSWER EACH TIME)       -->
+  <!-- ========================================== -->
+  <g transform="translate(60, 320)">
+    <!-- Phase background container -->
+    <rect x="0" y="0" width="1080" height="210" rx="14" fill="#0D1210" stroke="#1E2824" stroke-width="1.2" />
+    
+    <!-- Phase Badge -->
+    <rect x="20" y="16" width="245" height="26" rx="6" fill="#141E26" stroke="#254256" stroke-width="1" />
+    <circle cx="32" cy="29" r="4" fill="#38BDF8" />
+    <text x="44" y="33" fill="#38BDF8" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" letter-spacing="0.5">PHASE 2: ANSWER EACH TIME (chat.py)</text>
+
+    <!-- Node 1: User Question -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="180" height="125" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#38BDF8" font-family="'JetBrains Mono', monospace" font-size="11">1. RETRIEVE</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="15" font-weight="600">User Question</text>
+      <rect x="16" y="65" width="148" height="42" rx="6" fill="#1A2320" />
+      <text x="24" y="84" fill="#E1E6E2" font-family="'Inter', sans-serif" font-size="11">"How many vacation</text>
+      <text x="24" y="98" fill="#E1E6E2" font-family="'Inter', sans-serif" font-size="11">days per year?"</text>
+    </g>
+
+    <!-- Arrow 1 -> 2 -->
+    <line x1="210" y1="122" x2="240" y2="122" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 2: Vector Search -->
+    <g transform="translate(250, 60)">
+      <rect x="0" y="0" width="190" height="125" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#38BDF8" font-family="'JetBrains Mono', monospace" font-size="11">MATCH CHUNKS</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="15" font-weight="600">Semantic Search</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="11">query(n_results=4)</text>
+      <rect x="16" y="85" width="158" height="30" rx="4" fill="#19261E" />
+      <text x="24" y="104" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="10">Top-4 Chunks Found</text>
+    </g>
+
+    <!-- Arrow 2 -> 3 -->
+    <line x1="450" y1="122" x2="480" y2="122" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 3: Augmented Prompt -->
+    <g transform="translate(490, 60)">
+      <rect x="0" y="0" width="190" height="125" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#38BDF8" font-family="'JetBrains Mono', monospace" font-size="11">2. AUGMENT</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="15" font-weight="600">Inject Context</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="11">Prompt formatting:</text>
+      <text x="16" y="94" fill="#EAB308" font-family="'JetBrains Mono', monospace" font-size="9">"Context: [chunks]"</text>
+      <text x="16" y="108" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="9">"Question: [input]"</text>
+    </g>
+
+    <!-- Arrow 3 -> 4 -->
+    <line x1="690" y1="122" x2="720" y2="122" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 4: Claude LLM -->
+    <g transform="translate(730, 60)">
+      <rect x="0" y="0" width="160" height="125" rx="10" fill="#141B18" stroke="#25322C" stroke-width="1" />
+      <text x="16" y="28" fill="#38BDF8" font-family="'JetBrains Mono', monospace" font-size="11">3. GENERATE</text>
+      <text x="16" y="52" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="15" font-weight="600">Claude</text>
+      <text x="16" y="74" fill="#8E9992" font-family="'Inter', sans-serif" font-size="11">claude-3-5-sonnet</text>
+      <text x="16" y="94" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="10">Cloud API call</text>
+    </g>
+
+    <!-- Arrow 4 -> 5 -->
+    <line x1="900" y1="122" x2="920" y2="122" stroke="#B7FF3C" stroke-width="2" marker-end="url(#arrowNeon)" />
+
+    <!-- Node 5: Final Grounded Output -->
+    <g transform="translate(930, 60)">
+      <rect x="0" y="0" width="135" height="125" rx="10" fill="#18231C" stroke="#B7FF3C" stroke-width="1.5" />
+      <text x="12" y="28" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="10">OUTPUT</text>
+      <text x="12" y="48" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="13" font-weight="600">Answer +</text>
+      <text x="12" y="64" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="13" font-weight="600">Sources</text>
+      <text x="12" y="88" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="10">15 days/yr</text>
+      <text x="12" y="104" fill="#8E9992" font-family="'JetBrains Mono', monospace" font-size="9">handbook.md</text>
+    </g>
+  </g>
+</svg>

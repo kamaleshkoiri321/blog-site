@@ -25,6 +25,7 @@ export function Header() {
 
   // Close menu on navigation
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
   }, [pathname]);
 

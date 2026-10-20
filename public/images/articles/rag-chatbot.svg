@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080A0A" />
+      <stop offset="50%" stop-color="#0E1311" />
+      <stop offset="100%" stop-color="#141B18" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E2422" stroke-width="0.8" />
+    </pattern>
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B7FF3C" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#4EFA8F" stop-opacity="0.2" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+
+  <!-- Ambient glow circles -->
+  <circle cx="250" cy="220" r="180" fill="#B7FF3C" fill-opacity="0.04" filter="url(#glow)" />
+  <circle cx="950" cy="400" r="220" fill="#4EFA8F" fill-opacity="0.03" filter="url(#glow)" />
+
+  <!-- Header Category & Badge -->
+  <g transform="translate(80, 75)">
+    <rect x="0" y="0" width="165" height="30" rx="15" fill="#182218" stroke="#B7FF3C" stroke-width="1" stroke-opacity="0.5" />
+    <circle cx="15" cy="15" r="4" fill="#B7FF3C" />
+    <text x="28" y="20" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" letter-spacing="1">GENERATIVE AI</text>
+    
+    <text x="0" y="70" fill="#F4F5F2" font-family="'Inter', system-ui, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.5">Build a RAG Chatbot Over Your Documents</text>
+    <text x="0" y="102" fill="#8E9992" font-family="'JetBrains Mono', monospace" font-size="15">Local Vector Retrieval · ChromaDB · Claude 3.5 Sonnet</text>
+  </g>
+
+  <!-- Main Visual Composition -->
+  <!-- Left Side: Source Documents Stack -->
+  <g transform="translate(80, 230)">
+    <rect x="0" y="0" width="310" height="320" rx="16" fill="#101513" stroke="#222B27" stroke-width="1.5" />
+    <rect x="24" y="24" width="70" height="24" rx="6" fill="#18221B" />
+    <text x="35" y="40" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600">INPUT</text>
+    <text x="24" y="80" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="20" font-weight="700">Knowledge Base</text>
+    <text x="24" y="104" fill="#8E9992" font-family="'Inter', sans-serif" font-size="13">Raw text &amp; markdown docs</text>
+
+    <!-- File Cards -->
+    <g transform="translate(24, 125)">
+      <rect x="0" y="0" width="262" height="46" rx="8" fill="#161D1A" stroke="#25312C" stroke-width="1" />
+      <path d="M 20 18 L 28 18 L 34 24 L 34 32 L 20 32 Z" fill="none" stroke="#B7FF3C" stroke-width="1.5" />
+      <text x="46" y="28" fill="#E1E6E2" font-family="'JetBrains Mono', monospace" font-size="13">handbook.md</text>
+      <text x="210" y="28" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="11">12 chunks</text>
+    </g>
+
+    <g transform="translate(24, 182)">
+      <rect x="0" y="0" width="262" height="46" rx="8" fill="#161D1A" stroke="#25312C" stroke-width="1" />
+      <path d="M 20 18 L 28 18 L 34 24 L 34 32 L 20 32 Z" fill="none" stroke="#4EFA8F" stroke-width="1.5" />
+      <text x="46" y="28" fill="#E1E6E2" font-family="'JetBrains Mono', monospace" font-size="13">faq.txt</text>
+      <text x="215" y="28" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="11">6 chunks</text>
+    </g>
+
+    <g transform="translate(24, 239)">
+      <rect x="0" y="0" width="262" height="46" rx="8" fill="#161D1A" stroke="#25312C" stroke-width="1" />
+      <path d="M 20 18 L 28 18 L 34 24 L 34 32 L 20 32 Z" fill="none" stroke="#8E9992" stroke-width="1.5" />
+      <text x="46" y="28" fill="#E1E6E2" font-family="'JetBrains Mono', monospace" font-size="13">product-notes.md</text>
+      <text x="210" y="28" fill="#5F6D65" font-family="'JetBrains Mono', monospace" font-size="11">19 chunks</text>
+    </g>
+  </g>
+
+  <!-- Flow Connector Line 1 -->
+  <g transform="translate(390, 375)">
+    <line x1="10" y1="15" x2="65" y2="15" stroke="#B7FF3C" stroke-width="2" stroke-dasharray="4 4" />
+    <polygon points="65,10 75,15 65,20" fill="#B7FF3C" />
+  </g>
+
+  <!-- Center: Vector Index Engine (ChromaDB) -->
+  <g transform="translate(475, 230)">
+    <rect x="0" y="0" width="250" height="320" rx="16" fill="#101513" stroke="#B7FF3C" stroke-width="1.5" stroke-opacity="0.6" />
+    <rect x="24" y="24" width="80" height="24" rx="6" fill="#18221B" />
+    <text x="35" y="40" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600">ENGINE</text>
+    <text x="24" y="80" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="20" font-weight="700">ChromaDB</text>
+    <text x="24" y="104" fill="#8E9992" font-family="'Inter', sans-serif" font-size="13">Local embeddings store</text>
+
+    <!-- Vector visualizer box -->
+    <rect x="24" y="125" width="202" height="110" rx="8" fill="#161D1A" stroke="#25312C" stroke-width="1" />
+    <text x="36" y="152" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="12">[ 0.124, -0.482, ... ]</text>
+    <text x="36" y="174" fill="#8E9992" font-family="'JetBrains Mono', monospace" font-size="11">Cosine distance: 0.14</text>
+    <line x1="36" y1="192" x2="190" y2="192" stroke="#25312C" />
+    <text x="36" y="215" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="11">✓ Top-4 matches retrieved</text>
+
+    <!-- Status pill -->
+    <rect x="24" y="255" width="202" height="36" rx="8" fill="#18251C" stroke="#2F4E34" stroke-width="1" />
+    <circle cx="42" cy="273" r="4" fill="#4EFA8F" />
+    <text x="56" y="278" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11">PERSISTENT DB: OK</text>
+  </g>
+
+  <!-- Flow Connector Line 2 -->
+  <g transform="translate(725, 375)">
+    <line x1="10" y1="15" x2="65" y2="15" stroke="#B7FF3C" stroke-width="2" stroke-dasharray="4 4" />
+    <polygon points="65,10 75,15 65,20" fill="#B7FF3C" />
+  </g>
+
+  <!-- Right Side: Chatbot Generation Window -->
+  <g transform="translate(810, 230)">
+    <rect x="0" y="0" width="310" height="320" rx="16" fill="#101513" stroke="#222B27" stroke-width="1.5" />
+    <rect x="24" y="24" width="85" height="24" rx="6" fill="#18221B" />
+    <text x="35" y="40" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600">CLAUDE</text>
+    <text x="24" y="80" fill="#F4F5F2" font-family="'Inter', sans-serif" font-size="20" font-weight="700">Grounded Output</text>
+    <text x="24" y="104" fill="#8E9992" font-family="'Inter', sans-serif" font-size="13">Answers cite exact sources</text>
+
+    <!-- Question Bubble -->
+    <rect x="24" y="125" width="262" height="42" rx="8" fill="#181D1A" stroke="#2B3631" stroke-width="1" />
+    <text x="36" y="144" fill="#6B7971" font-family="'JetBrains Mono', monospace" font-size="10">USER QUESTION</text>
+    <text x="36" y="158" fill="#E1E6E2" font-family="'Inter', sans-serif" font-size="11">How many vacation days?</text>
+
+    <!-- Answer Bubble -->
+    <rect x="24" y="177" width="262" height="66" rx="8" fill="#17221A" stroke="#B7FF3C" stroke-width="1" stroke-opacity="0.5" />
+    <text x="36" y="196" fill="#B7FF3C" font-family="'JetBrains Mono', monospace" font-size="10">ASSISTANT (CLAUDE)</text>
+    <text x="36" y="214" fill="#E1E6E2" font-family="'Inter', sans-serif" font-size="12">15 days/year per handbook.</text>
+    <text x="36" y="232" fill="#8E9992" font-family="'JetBrains Mono', monospace" font-size="10">Sources: handbook.md</text>
+
+    <!-- Zero Hallucination Tag -->
+    <rect x="24" y="255" width="262" height="36" rx="8" fill="#131C16" stroke="#25352A" stroke-width="1" />
+    <text x="36" y="278" fill="#4EFA8F" font-family="'JetBrains Mono', monospace" font-size="11">✓ Zero hallucinations</text>
+  </g>
+</svg>
